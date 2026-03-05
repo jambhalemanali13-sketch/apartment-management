@@ -25,7 +25,40 @@ st.markdown("""
 st.set_page_config(page_title="Society Management", layout="wide", page_icon="🏠")
 DB_FILE = 'society.db'
 
+def insert_sample_data():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
 
+    cursor.execute("SELECT COUNT(*) FROM residents")
+    count = cursor.fetchone()[0]
+
+    if count == 0:
+        residents = [
+            ("Rahul Sharma", "101", "9876543210", 4),
+            ("Priya Patel", "102", "9876543211", 3),
+            ("Amit Singh", "201", "9876543212", 5),
+            ("Neha Verma", "202", "9876543213", 2)
+        ]
+
+        cursor.executemany(
+            "INSERT INTO residents (name, flat_number, phone, family_members) VALUES (?, ?, ?, ?)",
+            residents
+        )
+
+        parking = [
+            ("P1", "available"),
+            ("P2", "occupied"),
+            ("P3", "available"),
+            ("P4", "occupied")
+        ]
+
+        cursor.executemany(
+            "INSERT INTO parking_slots (slot_number, status) VALUES (?, ?)",
+            parking
+        )
+
+    conn.commit()
+    conn.close()
 
 def init_database():
     conn = sqlite3.connect(DB_FILE, timeout=20.0)
@@ -105,6 +138,7 @@ def init_database():
 
 
 init_database()
+insert_sample_data()
 
 
 
